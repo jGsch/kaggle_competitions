@@ -75,15 +75,13 @@ def train_model(model, dataloaders, config):
     """  Train and valid a model over all data for a certain number of epochs
     """
 
-    if model.score.verbose:
-        print('-'*101 + '\nTraining\n' + ' '*91 + '('+time.strftime('%X')+')')
+    print('-'*101 + '\nTraining\n' + ' '*91 + '('+time.strftime('%X')+')')
 
     # Start timer
-    model.score.time_counter('start')
+    # model.score.time_counter('start')
 
     for epoch in range(config['n_epochs']):
-        if model.score.verbose:
-            print('Epoch %2d/%2d:' % (epoch+1, config['n_epochs']), end=' '*3)
+        print('Epoch %2d/%2d:' % (epoch+1, config['n_epochs']), end=' '*3)
 
         # Training
         train(model, dataloaders['train'])
@@ -96,27 +94,25 @@ def train_model(model, dataloaders, config):
             model.save_best_weights()
 
         # Update learning rate scheduler
-        metric = model.score.best_score['valid'] if isinstance(model.scheduler, ReduceLROnPlateau) else None
-        model.scheduler.step(metric)
+        model.scheduler.step()
 
         # Print loss and scores for each epoch
         model.score.print_epoch_scores(epoch)
 
         # Save checkpoint
-        model.save(epoch=epoch, checkpoint=True)
+        # model.save(epoch=epoch, checkpoint=True)
 
     # Stop timer, load best weights and print scores
-    model.score.time_counter('stop', phase='training')
+    # model.score.time_counter('stop', phase='training')
     model.load_best_weights()
-    model.score.print_scores('training')
+    model.score.print_final_scores('training')
 
 
 def test_model(model, dataloaders):
     """  Test a model over all data
     """
 
-    if model.score.verbose:
-        print('-'*105 + '\nTesting\n')
+    print('-'*105 + '\nTesting\n')
 
     # Set model to evaluation mode
     model.net.eval()
